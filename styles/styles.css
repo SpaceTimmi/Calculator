@@ -2,7 +2,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: gray;
     font-size: x-large;
     border: 2px solid black;
     border-radius: 2rem;
@@ -24,9 +23,10 @@ body {
 
 .screen {
     height: 70px;
-    width: 70%;
+    width: 100%;
     border: 2px solid black;
-    border-radius: 2rem; 
+    border-radius: 2rem;
+    background-color: greenyellow; 
 }
 
 .buttons {
@@ -36,6 +36,21 @@ body {
     gap: 0.5rem;
 }
 
-.numbers {
-    size: x-large;
+.numbers, .operations {
+    font-size: large;
+    font-style: italic;
+    display: inline-block;
+    background-color: greenyellow;
+    color: black;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 2rem;
+}
+
+.numbers:focus, .operations:focus {
+    outline: none;
+}
+
+.numbers:active, .operations:active {
+    transform: scale(0.98);
 }
