@@ -1,0 +1,41 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: gray;
+    font-size: x-large;
+    border: 2px solid black;
+    border-radius: 2rem;
+    width: 40%;
+    margin-left: 30%;
+}
+
+.text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.body-container {
+    justify-content: center;
+    align-items: center;
+}
+
+.screen {
+    height: 70px;
+    width: 70%;
+    border: 2px solid black;
+    border-radius: 2rem; 
+}
+
+.buttons {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    gap: 0.5rem;
+}
+
+.numbers {
+    size: x-large;
+}
