@@ -40,7 +40,7 @@ function addToStack(btn, isNumeric) {
             pendingNumbers = [0];
 
         } else if (textValue === " delete ") {
-            const operators = [" + ", " - ", " * ", " / " ]
+            const operators = [" + ", " - ", " * ", " / "]
             let lastMemberOfArr = pendingNumbers[0].toString();
             let onlyOneDigitRemaining = lastMemberOfArr.split("").length === 1;  // checks if the only number onscreen is a single digit 
             
@@ -54,9 +54,13 @@ function addToStack(btn, isNumeric) {
                 if (operators.includes(lastElem)) {  
                     // The delete was invoked for an operand.
                     let end = output.length - 3; 
-                    output = output.slice(0, end)
+                    output = output.slice(0, end);
 
-                } else { 
+                } else if (output.slice(-1) === ".") {
+                    // The delete was invoked for a decimal.
+                    output = output.slice(0, -1);
+                }
+                 else { 
                     // The delete was invoked for a number.
                     let end = output.length - 1;
                     output = output.slice(0, end);
