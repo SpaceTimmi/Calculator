@@ -23,7 +23,7 @@ body {
 
 .screen {
     height: 70px;
-    width: 100%;
+    width: 95%;
     border: 2px solid black;
     border-radius: 2rem;
     background-color: greenyellow; 
