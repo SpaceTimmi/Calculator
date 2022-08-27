@@ -1,0 +1,19 @@
+// Get elements
+const zero = document.getElementsByClassName("zero");
+const one = document.getElementsByClassName("one");
+const two = document.getElementsByClassName("two");
+const three = document.getElementsByClassName("three");
+const four = document.getElementsByClassName("four");
+const five = document.getElementsByClassName("five");
+const six = document.getElementsByClassName("six");
+const seven = document.getElementsByClassName("seven");
+const eight = document.getElementsByClassName("eight");
+const nine = document.getElementsByClassName("nine");
+const equalBtn = document.getElementsByClassName("equals");
+const addBtn = document.getElementsByClassName("add");
+const subtractBtn= document.getElementsByClassName("subtract");
+const multiplyBtn = document.getElementsByClassName("multiply");
+const divideBtn = document.getElementsByClassName("divide-by");
+const clearBtn = document.getElementsByClassName("clear");
+const deleteBtn = document.getElementsByClassName("delete");
+const dotBtn = document.getElementsByClassName("dot");
