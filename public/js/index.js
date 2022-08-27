@@ -40,37 +40,44 @@ function addToStack(btn, isNumeric) {
             pendingNumbers = [0];
 
         } else if (textValue === " delete ") {
-
-            /*
             const operators = [" + ", " - ", " * ", " / " ]
-            // If delete is used on the last element then just update pendingNumbers to [0] 
-            let strEnd = output.split(" ").reverse().join(" ").indexOf(textValue);
-            output = output.slice(0, strEnd);
-            if (pendingNumbers.length === 1 && pendingNumbers[0].length === 1) {
-                pendingNumbers = [0]
-            } else {
-                
+            let lastMemberOfArr = pendingNumbers[0].toString();
+            let onlyOneDigitRemaining = lastMemberOfArr.split("").length === 1;  // checks if the only number onscreen is a single digit 
+            
+            if (pendingNumbers.length === 1 && onlyOneDigitRemaining) { 
+            // There is nothing in the stack to delete. This is the last number.
+                output = "" 
+                pendingNumbers = [0];
 
+            } else {
+                let lastElem = output.slice(-3);
+                if (operators.includes(lastElem)) {  
+                    // The delete was invoked for an operand.
+                    let end = output.length - 3; 
+                    output = output.slice(0, end)
+
+                } else { 
+                    // The delete was invoked for a number.
+                    let end = output.length - 1;
+                    output = output.slice(0, end);
+
+                    let lastNumPosition = pendingNumbers.length - 1;
+                    let lastNumStr = pendingNumbers[lastNumPosition].toString();
                 
-                let lastElem = pendingNumbers[pendingNumbers.length - 1].toString()
-                //console.log("LastElem", lastElem)
-                if (lastElem.length === 1) {
-                    pendingNumbers.pop()
-                } else if (lastElem.length > 1 || output[output.length - 1] != " ") {
-                    let end = lastElem.length - 1;
-                    //console.log("end", end)
-                    let result = lastElem.slice(0, end);
-                    //console.log("result", result);  
-                    pendingNumbers[pendingNumbers.length - 1] = parseFloat(result); 
-                } else if (output[output.length - 1] === " ") {
-                    let end = lastElem.length - 3
-                    let result = lastElem.slice(0, end);
-                    pendingNumbers[pendingNumbers.length - 1] = parseFloat(result); 
-                }  
-            } */
+                    if (lastNumStr.length > 1) {
+                        lastNumStr = lastNumStr.slice(0, -1);
+                        pendingNumbers.pop();
+                        pendingNumbers.push(parseFloat(lastNumStr));
+                    } else {
+                        pendingNumbers.pop();
+                    }
+                }
+            }
 
         } else if (textValue === " . ") {
+            // Handles the " . " button input
             output += "."
+
         } else {
             // Handles the operators ("+"   "-"    "*"    "/")
             const check = noPreviousEntryConflict(output, textValue);
