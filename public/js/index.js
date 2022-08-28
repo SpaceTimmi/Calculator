@@ -3,6 +3,7 @@ const display = document.getElementById("display");
 
 let output = "";
 let pendingNumbers = [0];
+let pendingOperations = [];
 
 // Numeric operations
 document.querySelectorAll(".numbers").forEach(item => {
@@ -30,14 +31,19 @@ function addToStack(btn, isNumeric) {
         } else {
             pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + textValue); 
         } 
-        console.log(output, pendingNumbers);
+        console.log(output, pendingNumbers, pendingOperations);
     } else {
 
         if (textValue === " = ") {
+            while (pendingOperations.length > 0) {
+                computeAnswer();
+            }
+            output = pendingNumbers[0].toString();
 
         }  else if (textValue === " clear ") {
             output = "";
             pendingNumbers = [0];
+            pendingOperations = [];
 
         } else if (textValue === " delete ") {
             const operators = [" + ", " - ", " * ", " / "]
@@ -91,14 +97,49 @@ function addToStack(btn, isNumeric) {
                 conflictMerge(textValue);
             }
         }
-        console.log(output, pendingNumbers); 
+        console.log(output, pendingNumbers, pendingOperations); 
     }
 }
 
+function computeAnswer() {
+    const bodmas = [" / ", " * ", " + ", " - "];  // Implementation for brackets missing!!!
+    for (let i = 0; i < bodmas.length; i++) {
+       let oprIndex = pendingOperations.indexOf(bodmas[i]);
+       if (oprIndex != -1) {  // The operand was found in the array of pending operations.
+            let removed = pendingNumbers.splice(oprIndex, 2);
+            if (bodmas[i] === " / ") {
+                pendingOperations.splice(oprIndex, 1);
+                let result = removed[0] / removed[1];
+                pendingNumbers.splice(oprIndex, 0, result);
+                return
+
+            } else if (bodmas[i] === " * ") {
+                pendingOperations.splice(oprIndex, 1);
+                let result = removed[0] * removed[1];
+                pendingNumbers.splice(oprIndex, 0, result);
+                return
+
+            } else if (bodmas[i] === " + ") {
+                pendingOperations.splice(oprIndex, 1);
+                let result = removed[0] + removed[1];
+                pendingNumbers.splice(oprIndex, 0, result);
+                return
+
+            } else if (bodmas[i] === " - ") {
+                pendingOperations.splice(oprIndex, 1);
+                let result = removed[0] - removed[1];
+                pendingNumbers.splice(oprIndex, 0, result);
+                return
+            } 
+       } 
+    } 
+}
+
+
+// Checks if the previous entry clashes with the current input (for operands).
 function noPreviousEntryConflict(output, textValue) {
-    // Checks if the previous entry clashes with the current input (for operands).
     const lastElement = output[output.length - 2];
-    const operators = ["+", "-", "*", "/" ]
+    const operators = ["+", "-", "*", "/" ];
     
     if (operators.includes(textValue[1]) && operators.includes(lastElement)) {
         return false;
@@ -107,15 +148,19 @@ function noPreviousEntryConflict(output, textValue) {
     }
 }
 
+
+// This function updates the calculator state as normal.
 function noConflictMerge(textValue) {
-    // This function updates the calculator state as normal.
   output += textValue;
   pendingNumbers.push(0);
+  pendingOperations.push(textValue);
 }
 
+
+// This function updates the calculator state if there are two successive uses of operands. 
 function conflictMerge(textValue) {
-    // This function updates the calculator state if there are two successive uses of operands. 
     let end = output.length - 3;
     output = output.slice(0, end);
     output += textValue;
+    pendingOperations.push(textValue);
 }
