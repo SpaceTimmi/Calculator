@@ -1,16 +1,20 @@
-// Get screen 
-const display = document.getElementById("display");
-
+// State variables.
 let output = "";
 let pendingNumbers = [0];
 let pendingOperations = [];
 
-// Numeric operations
+// Get screen 
+const display = document.getElementById("display");
+
+
+
+// Numeric operations (adds event listeners to all the numeric buttons)
 document.querySelectorAll(".numbers").forEach(item => {
     item.addEventListener("click", () => addToStack(item, true));
 });
 
-// Non-numeric Operations 
+
+// Non-numeric operations (adds event listeners to all the non-numeric buttons)  
 document.querySelectorAll(".operations").forEach(item => {
     item.addEventListener("click", () => addToStack(item, false));
 });
@@ -30,7 +34,8 @@ function addToStack(btn, isNumeric) {
             pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + `.${textValue}`); 
         } else {
             pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + textValue); 
-        } 
+        }
+        updateScreen();
         console.log(output, pendingNumbers, pendingOperations);
     } else {
 
@@ -97,6 +102,7 @@ function addToStack(btn, isNumeric) {
                 conflictMerge(textValue);
             }
         }
+        updateScreen();
         console.log(output, pendingNumbers, pendingOperations); 
     }
 }
@@ -163,4 +169,9 @@ function conflictMerge(textValue) {
     output = output.slice(0, end);
     output += textValue;
     pendingOperations.push(textValue);
+}
+
+function updateScreen() {
+    // updates the calculator screen. 
+    display.innerHTML = output;
 }
