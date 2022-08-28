@@ -54,3 +54,20 @@ body {
 .numbers:active, .operations:active {
     transform: scale(0.98);
 }
+
+@media screen and (max-width: 1000px) {
+  .body-container {
+    width: max-content;
+    height:max-content;
+  }
+
+  body {
+    border: none;
+  }
+  
+  .container {
+    margin-top: 50%;
+    border: 2px solid black;
+    border-radius: 2rem;
+  }
+}
