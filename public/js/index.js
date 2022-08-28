@@ -66,6 +66,7 @@ function addToStack(btn, isNumeric) {
                     // The delete was invoked for an operand.
                     let end = output.length - 3; 
                     output = output.slice(0, end);
+                    pendingOperations.pop();
 
                 } else if (output.slice(-1) === ".") {
                     // The delete was invoked for a decimal.
