@@ -29,6 +29,10 @@ body {
     background-color: greenyellow; 
 }
 
+#display {
+    margin-left: 1rem;
+}
+
 .buttons {
     margin-top: 2rem;
     display: grid;
