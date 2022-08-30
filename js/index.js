@@ -1,3 +1,5 @@
+/* ================= Get Screen, Buttons and initialize State Variables =========================*/
+
 // State variables.
 let output = "";
 let pendingNumbers = [0];
@@ -6,109 +8,136 @@ let pendingOperations = [];
 // Get screen 
 const display = document.getElementById("display");
 
-
-
-// Numeric operations (adds event listeners to all the numeric buttons)
+// Get numeric buttons (class - Numbers) 
 document.querySelectorAll(".numbers").forEach(item => {
     item.addEventListener("click", () => addToStack(item, true));
 });
 
-
-// Non-numeric operations (adds event listeners to all the non-numeric buttons)  
+// Get non-numeric buttons (class - operations)  
 document.querySelectorAll(".operations").forEach(item => {
     item.addEventListener("click", () => addToStack(item, false));
 });
 
 
-
-// Helper functions
+/* ================================ Main Function ===========================================*/
 function addToStack(btn, isNumeric) {
-    // Adds numerical values to the screen and keeps track
-    // of then via pendingNumbers.
     let textValue = btn.textContent;
-    
     if (isNumeric) {
-        output += textValue;
-        let end = pendingNumbers.length < 1 ? 0 : pendingNumbers.length - 1
-        if (output[output.length - 2] == ".") {
-            pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + `.${textValue}`); 
-        } else {
-            pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + textValue); 
-        }
+        registerNumber(textValue);    
         updateScreen();
         console.log(output, pendingNumbers, pendingOperations);
     } else {
-
         if (textValue === " = ") {
-            while (pendingOperations.length > 0) {
-                computeAnswer();
-            }
-            output = pendingNumbers[0].toString();
-
+            registerEqualsToClick();
         }  else if (textValue === " clear ") {
-            output = "";
-            pendingNumbers = [0];
-            pendingOperations = [];
-
+            registerClearBtnClick();
         } else if (textValue === " delete ") {
-            const operators = [" + ", " - ", " * ", " / "]
-            let lastMemberOfArr = pendingNumbers[0].toString();
-            let onlyOneDigitRemaining = lastMemberOfArr.split("").length === 1;  // checks if the only number onscreen is a single digit 
-            
-            if (pendingNumbers.length === 1 && onlyOneDigitRemaining) { 
-            // There is nothing in the stack to delete. This is the last number.
-                output = "" 
-                pendingNumbers = [0];
-
-            } else {
-                let lastElem = output.slice(-3);
-                if (operators.includes(lastElem)) {  
-                    // The delete was invoked for an operand.
-                    let end = output.length - 3; 
-                    output = output.slice(0, end);
-                    pendingOperations.pop();
-
-                } else if (output.slice(-1) === ".") {
-                    // The delete was invoked for a decimal.
-                    output = output.slice(0, -1);
-                }
-                 else { 
-                    // The delete was invoked for a number.
-                    let end = output.length - 1;
-                    output = output.slice(0, end);
-
-                    let lastNumPosition = pendingNumbers.length - 1;
-                    let lastNumStr = pendingNumbers[lastNumPosition].toString();
-                
-                    if (lastNumStr.length > 1) {
-                        lastNumStr = lastNumStr.slice(0, -1);
-                        pendingNumbers.pop();
-                        pendingNumbers.push(parseFloat(lastNumStr));
-                    } else {
-                        pendingNumbers.pop();
-                    }
-                }
-            }
-
+            registerDelete();            
         } else if (textValue === " . ") {
-            // Handles the " . " button input
-            output += "."
-
+            registerDecimal(); 
         } else {
-            // Handles the operators ("+"   "-"    "*"    "/")
-            const check = noPreviousEntryConflict(output, textValue);
-            if (check) {
-                noConflictMerge(textValue);  
-            } else {
-                conflictMerge(textValue);
-            }
+            registerOperands(textValue);
         }
         updateScreen();
         console.log(output, pendingNumbers, pendingOperations); 
     }
 }
 
+// Helpers //
+/* =================================== Updates and Register Functions ==============================*/
+
+function updateScreen() {
+    // updates the calculator screen. 
+    display.innerHTML = output;
+}
+
+function registerDecimal() {
+    // adds decimal to screen once clicked.
+    output += "."
+};
+
+function registerClearBtnClick() {
+    // Clears already typed in values from screen and state.
+    output = "";
+    pendingNumbers = [0];
+    pendingOperations = [];
+};
+
+function registerEqualsToClick() {
+    // Iteratively calls computeAnswer() until there are no more operations and outputs the result. 
+    while (pendingOperations.length > 0) {
+        computeAnswer();
+    }
+    output = pendingNumbers[0].toString();
+};
+
+function registerNumber(textValue) {
+    // Adds number to screen and updates state variables to include said numbers.
+    output += textValue;
+    let end = pendingNumbers.length < 1 ? 0 : pendingNumbers.length - 1
+    pendingNumbers[end] = parseFloat(pendingNumbers[end].toString() + textValue); 
+};
+
+function registerOperands(textValue)  {
+    // Adds operands to the screen and update state variables to include said operands.
+    // Also calls a function (computeDecimal) that handles the conversion of float inputs to decimal.
+    // ComputeDecimal is here because if a user clicks on the on an operand (assuming the previous input was a float)
+    // then we know the user has finised entering the float value there we can now update state to reflect that.
+    const check = noPreviousEntryConflict(output, textValue);
+    if (check) {
+        noConflictMerge(textValue);  
+    } else {
+        conflictMerge(textValue);
+    }
+    computeDecimal(textValue);
+};
+
+function registerDelete() {
+    // Removes the last clicked value from both state and screen. 
+    const operators = [" + ", " - ", " * ", " / "];
+    let lastMemberOfArr = pendingNumbers[0].toString();
+    let onlyOneDigitRemaining = lastMemberOfArr.split("").length === 1;
+
+    if (pendingNumbers.length === 1 && onlyOneDigitRemaining) { 
+        // There is nothing in the stack to delete.
+        output = "" 
+        pendingNumbers = [0];
+    } else {
+        
+        let lastElem = output.slice(-3);
+        if (operators.includes(lastElem)) {  
+           // The delete was invoked for an operand.
+            let end = output.length - 3; 
+            output = output.slice(0, end);
+            pendingOperations.pop();
+        
+        } else if (output.slice(-1) === ".") {
+            // The delete was invoked for a decimal.
+            output = output.slice(0, -1);
+        
+        } else { 
+            // The delete was invoked for a number.
+            let end = output.length - 1;
+            output = output.slice(0, end);
+
+            let lastNumPosition = pendingNumbers.length - 1;
+            let lastNumStr = pendingNumbers[lastNumPosition].toString();
+                
+            if (lastNumStr.length > 1) {
+                lastNumStr = lastNumStr.slice(0, -1);
+                pendingNumbers.pop();
+                pendingNumbers.push(parseFloat(lastNumStr));
+            } else {
+                pendingNumbers.pop();
+            }
+        }
+    }
+};
+
+
+/* ================================ Compute Functions ===========================================*/
 function computeAnswer() {
+    // Computes the result based on state variables.
     const bodmas = [" / ", " * ", " + ", " - "];  // Implementation for brackets missing!!!
     for (let i = 0; i < bodmas.length; i++) {
        let oprIndex = pendingOperations.indexOf(bodmas[i]);
@@ -142,8 +171,29 @@ function computeAnswer() {
     } 
 }
 
+function computeDecimal() {
+    // Only runs (completely) if the last input on screen was a decimal number.
+    // It updates state variables to include said decimal number.
+    
+    // No coverage for last input being a decimal yet!!!
+    let decimalStr = output.slice(0, (output.length - 3));
+    if (!decimalStr.includes(".")) {
+        return
+    }
+    let newOutput = decimalStr.split("").reverse().join("");
+    let end = newOutput.indexOf(" ");
+    let sliced = (end !== -1) ? newOutput.slice(0, end) : newOutput
+    let reversed = sliced.split("").reverse().join("");
+    let decimalFloat = parseFloat(reversed);
+    pendingNumbers.splice(-2, 2); 
+    pendingNumbers.splice(pendingNumbers.length, 0, decimalFloat, 0);
+}
 
-// Checks if the previous entry clashes with the current input (for operands).
+
+/* ======================================== Checks =================================================  */
+// noPreviousEntryConflict takes in two variables, the screen (output) and the key pressed (textValue).
+// It returns 'false' if adding the key to output will result in a conflict (e.g. + -) 
+// returns 'true' otherwise. 
 function noPreviousEntryConflict(output, textValue) {
     const lastElement = output[output.length - 2];
     const operators = ["+", "-", "*", "/" ];
@@ -155,16 +205,17 @@ function noPreviousEntryConflict(output, textValue) {
     }
 }
 
+/* ======================================== Merge =================================================  */
+// Updates state and screen when an operand or number button is clicked.
+// noConflictMerge -> Handles cases where is no clash in input. 
+// conflictMerge   -> Handles cases where ther is clash in input (e.g. user tries to enter two operands successively)  
 
-// This function updates the calculator state as normal.
 function noConflictMerge(textValue) {
   output += textValue;
   pendingNumbers.push(0);
   pendingOperations.push(textValue);
 }
 
-
-// This function updates the calculator state if there are two successive uses of operands. 
 function conflictMerge(textValue) {
     let end = output.length - 3;
     output = output.slice(0, end);
@@ -172,7 +223,3 @@ function conflictMerge(textValue) {
     pendingOperations.push(textValue);
 }
 
-function updateScreen() {
-    // updates the calculator screen. 
-    display.innerHTML = output;
-}
