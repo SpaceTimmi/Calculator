@@ -220,6 +220,6 @@ function conflictMerge(textValue) {
     let end = output.length - 3;
     output = output.slice(0, end);
     output += textValue;
+    pendingOperations.pop();
     pendingOperations.push(textValue);
 }
-
